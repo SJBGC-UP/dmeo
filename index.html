@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html" ; charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="referrer" content="origin">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <title>模拟百度模糊搜索 - 20200930</title>
+    <meta name="keywords" content="关键字">
+    <meta name="description" content="描述">
+    <!-- <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/> -->
+    <!-- <link rel="stylesheet" href="样式表.css"> -->
+    <!-- <script type="text/javascript" src="JavaScript文件地址" charset="UTF-8"></script> -->
+    <style type="text/css">
+        /*内联样式*/
+        h1 {
+            text-align: center;
+            margin: 40px;
+            line-height: 56px;
+        }
+
+        .content {
+            width: 80%;
+            margin: 20px auto;
+            line-height: 30px;
+            background-color: #ececec8c;
+            padding: 10px 20px;
+            border-radius: 20px;
+        }
+
+        img {
+            width: 100%;
+        }
+
+        i {
+            color: red;
+            font-weight: bold;
+        }
+
+        span {
+            color: blue;
+        }
+
+        .clearfix {
+            zoom: 1;
+        }
+
+        .clearfix:after {
+            display: block;
+            width: 0;
+            height: 0;
+            content: "";
+            clear: both;
+            /*溢出隐藏和元素不可见*/
+            overflow: hidden;
+            visibility: hidden;
+        }
+
+        .box {
+            width: 500px;
+            height: 50px;
+            margin: 50px auto 400px;
+            position: relative;
+        }
+
+        .box a {
+            text-decoration: none;
+            color: #000;
+        }
+
+        .box ul,
+        .box li {
+            list-style: none;
+        }
+
+        .box input {
+            width: 350px;
+            height: 36px;
+            font-size: 18px;
+            line-height: 36px;
+            padding: 0 20px;
+            outline: none;
+            border: 2px solid #aaa;
+            border-radius: 10px 0 0 10px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .box input:focus {
+            border: 2px solid blue;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .box .searchBtn {
+            display: inline-block;
+            width: 90px;
+            height: 40px;
+            line-height: 36px;
+            text-align: center;
+            /* border: 2px solid blue; */
+            border-radius: 0 10px 10px 0;
+            background-color: blue;
+            position: absolute;
+            color: #fff;
+            top: 0;
+            left: 392px;
+        }
+
+        .box .list {
+            display: none;
+            width: 360px;
+            margin: 0;
+            padding: 10px 10px 5px 20px;
+            border: 2px solid blue;
+            background-color: #fff;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            position: absolute;
+            top: 33px;
+            left: 0;
+        }
+
+        .box .list li {
+            line-height: 30px;
+            color: rgb(116, 116, 116);
+            cursor: pointer;
+        }
+
+        .box .list li .del {
+            font-size: 14px;
+            color: #aaa;
+            float: right;
+            display: none;
+        }
+
+        .box .list li:hover {
+            color: blue;
+        }
+
+        .box .list li:hover .del {
+            display: block;
+        }
+
+        .box .list li .del:hover {
+            color: blue;
+        }
+
+        .box .history-set {
+            padding-left: 150px;
+        }
+
+        .box .history-set a {
+            font-size: 14px;
+            color: #aaa;
+            margin: 0 5px;
+        }
+
+        .box .history-set a:hover {
+            color: blue;
+        }
+    </style>
+    <script type="text/javascript">
+
+    </script>
+</head>
+
+<body>
+    <div class="content">
+        <h1>模拟百度模糊搜索</h1>
+        <p style="color: royalblue; font-size: 18px;line-height: 36px;">关键词[详情看源码]：【】【】【】【】【】【】【】【】【】【】【】【】【】【】【】【】【】
+        </p>
+        <hr />
+        <ol>
+            <li>搜索框获得焦点时显示列表框</li>
+            <li>当在搜索框中输入内容时，向百度发送数据请求，非同源的，显示近似匹配的内容</li>
+            <li>当搜索框失去焦点 隐藏列表框 </li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ol>
+        <hr />
+    </div>
+    <div class="box" id="box">
+        <input type="text" id="searchInput">
+        <a href="javascript:;" class="searchBtn">百度一哈</a>
+        <ul class="list" id="list">
+            <!-- <li>sjbgc-C<a href="javascript:;" class="del">删除</a></li>
+            <li>sjbgc-SQL
+                <a href="javascript:;" class="del">删除</a>
+            </li>
+            <li class="history-set">
+                <a href="javascript:;">更多历史</a>
+                <a href="javascript:;">删除历史</a>
+                <a href="javascript:;">关闭历史</a>
+            </li> -->
+        </ul>
+    </div>
+
+</body>
+<script type="text/javascript" src="./JS/jquery-1.11.3.min.js" charset="UTF-8"></script>
+<script type="text/javascript">
+
+    var searchModule = (function () {
+        var $searchInput = $('#searchInput'),
+            $list = $('#list');
+
+        // 向百度的服务器发送jsonp请求，获取到返回的内容，绑定在页面对应位置
+        // 百度搜索的模糊词pc端的api    https://www.baidu.com/sugrec?pre=1&p=3&ie=utf-8&json=1&prod=pc&from=pc_web&sugsid=7506,32617,1469,7566,32795,32723,32231,7517,7605,32115,26350,22157&wd=%E7%99%BE%E5%BA%A6%E6%90%9C&req=2&bs=%E7%99%BE%E5%BA%A6%E6%90%9C%E7%B4%A2api%E6%8E%A5%E5%8F%A3&pbs=%E7%99%BE%E5%BA%A6%E6%90%9C%E7%B4%A2api%E6%8E%A5%E5%8F%A3&csor=3&pwd=%E7%99%BE%E5%BA%A6%E6%90%9C%E7%B4%A2&cb=jQuery1102006777163889855808_1601469604285&_=1601469604336
+
+        // 简化后的api：   https://www.baidu.com/sugrec?pre=1&p=3&ie=utf-8&json=1&prod=pc&from=pc_web&sugsid=7506,32617,1469,7566,32795,32723,32231,7517,7605,32115,26350,22157&wd=搜索框输入的内容&cb=jQuery的一个随机函数后
+
+        // 例如：https://www.baidu.com/sugrec?pre=1&p=3&ie=utf-8&json=1&prod=pc&from=pc_web&sugsid=7506,32617,1469,7566,32795,32723,32231,7517,7605,32115,26350,22157&wd=设计&cb=jQuery1102006777163889855808_1601469604285&_=1601469604336  读音标视频超过十分钟
+        function bindHTML() {
+            var searchkey = $searchInput.val();
+
+            function callback(data) {
+                data = data["g"];
+                var str = "";
+                // 如果没有数据 直接能出
+                if (typeof data == "undefined") {
+                    return;
+                };
+                $.each(data, function (index, item) {
+                    // console.log(item);
+                    str += "<li>" + item["q"] + "</li>";
+                });
+                str += '<li class="history-set"><a href="javascript:;">关闭历史</a><a href="javascript:;">删除历史</a><a href="javascript:;">更多历史</a></li>';
+                // $list.html(str).stop().slideDown(100);  // 绑定好数据后，把当前动画停止 ，进行下一个动画下拉显示
+                $list.html(str).css("display", "block");  // 绑定好数据后，把当前动画停止 ，进行下一个动画下拉显示
+            };
+
+            $.ajax({
+                url: "https://www.baidu.com/sugrec?pre=1&p=3&ie=utf-8&json=1&prod=pc&from=pc_web&sugsid=7506,32617,1469,7566,32795,32723,32231,7517,7605,32115,26350,22157&wd=" + searchkey,
+                dataType: 'jsonp',
+                jsonp: "cb",
+                success: callback
+            });
+        };
+
+        // 事件绑定和模块入口
+        function init() {
+            var val = "";  // 存放input的内容
+            // 1.1 鼠标在搜索框按下时，如果搜索框有内容，做bindHTML，没有则什么都不做
+            // 1.2 按键在搜索框抬起时，如果搜索框有内容，做bindHTML，没有则什么都不做
+            $searchInput.on("focus keyup", function () {  // jq的on事件绑定可以给多个事件绑定同一个方法
+                val = $(this).val();
+                if (val.length > 0) {
+                    bindHTML();
+                    return;
+                };
+                // $list.stop().slideUp(100);  // 如果没有内容则把搜索的相似内容列表 收起
+                $list.stop().css("display", "none");  // 如果没有内容则把搜索的相似内容列表 收起
+            });
+
+
+            // document事件委托处理  点击的是li我们让li的内容显示在input中，然后列表隐藏，开新窗口搜索结果。点击的是input什么都不做。如果点的是”百度一哈“那么打开一个新窗口并把关键词搜索出来。否则点击其余的所有情况都隐藏列表
+            $(document).on("click", function (ev) {  // 做事件委托
+                var target = ev.target,
+                    tagName = target.tagName.toUpperCase(),
+                    $target = $(target);
+                if (tagName === "LI" && target.parentNode.id === "list") {
+                    // console.log(ev);
+                    $searchInput.val($target.html());  // 其实也不用做隐藏列表了，因为鼠标在li上点下时，是input先失去焦点，上面做了input失去焦点时  延时做隐藏列表，先执行li点击事件
+                    // $list.stop().slideUp(100);
+                    $list.stop().css("display", "none");
+                    var newWeb = window.open('_blank');  // 创建一个新窗口的方法
+                    newWeb.location.href = "https://www.baidu.com/s?wd=" + $target.html() + "&cl=3";
+                };
+                if (target.id === "searchInput") {
+                    return;
+                };
+                val = $searchInput.val();
+                if (target.className === "searchBtn" && tagName === "A" && val.length > 0) {
+                    var newWeb = window.open('_blank');  // 创建一个新窗口的方法
+                    newWeb.location.href = "https://www.baidu.com/s?wd=" + val + "&cl=3";
+                    return;
+                };
+                // $list.stop().slideUp(100);
+                $list.stop().css("display", "none");
+            });
+
+        };
+
+
+
+
+        return {
+            init: init
+        };
+    })();
+    // 执行
+    searchModule.init();
+
+
+
+
+
+
+</script>
+
+</html>
